@@ -1,20 +1,3 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Weekly') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __("You're logged in!") }}
-                </div>
-            </div>
-        </div>
-    </div>
-</x-app-layout>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -34,7 +17,7 @@
             opacity: 0;
         }
 
-        to {
+        to { 
             opacity: 1;
         }
     }
@@ -479,7 +462,57 @@
     </button>
 
     <script>
-    
+    function deleteUser(userId, button) {
+        fetch('/dashboard/user/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: userId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    button.closest('tr').remove();
+                    alert('User deleted successfully');
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+
+    function updateStatus(userId, status, button) {
+        fetch('/dashboard/user/userStatus', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    status: status
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('User status updated successfully');
+                    const statusCell = button.closest('tr').querySelector(
+                        'td:nth-child(4)');
+                    const statusDropdown = statusCell.querySelector('select');
+                    statusDropdown.value = status;
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Something went wrong!');
+            });
+    }
     </script>
 
 </body>
